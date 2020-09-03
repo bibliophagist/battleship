@@ -5,7 +5,6 @@ import java.util.Objects;
 
 public class Ship {
     private ShipClass shipClass;
-    //TODO refactor to Set
     private ArrayList<String> shipCoordinates;
     private final ArrayList<String> shipHitCoordinates = new ArrayList<>();
 

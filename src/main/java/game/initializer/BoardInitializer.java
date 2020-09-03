@@ -11,7 +11,6 @@ import java.util.regex.Pattern;
 public class BoardInitializer {
 
     public GameBoard createGameBoard(String shipInputPlacement, String gameBoardSize) throws GameCouldNotBeCreatedException {
-        //TODO replace with static?
         ShipInitializer shipInitializer = new ShipInitializer();
         ArrayList<Ship> ships = shipInitializer.placeShips(shipInputPlacement);
         String[] size = gameBoardSize.split(Pattern.quote("*"));

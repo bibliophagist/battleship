@@ -4,6 +4,7 @@ import game.exception.GameCouldNotBeCreatedException;
 import game.initializer.BoardInitializer;
 import game.objects.GameBoard;
 import game.objects.Shot;
+import game.utils.Constants;
 
 import java.util.Scanner;
 
@@ -18,7 +19,9 @@ public class MainThread extends Thread {
         boolean gameIsOver = false;
         GameBoard playerOneGameBoard = null;
         GameBoard playerTwoGameBoard = null;
-        System.out.println("Please input game board size. Example 10*10");
+        System.out.println("Please input game board size in X * Y format, where X is the number of cells horizontally" +
+                " and Y is the number of cells vertically. Example: 10*10. (Note: max size " +
+                Constants.yEnd + "*" + Constants.yEnd + ", min size " + Constants.yEntry + "*" + Constants.yEntry + ")");
         String gameBoardSize = scanner.nextLine();
         while (!shipsWasPlaced) {
 
@@ -45,54 +48,61 @@ public class MainThread extends Thread {
         }
         playerOneGameBoard.setPlayerShotPlacement(playerTwoGameBoard);
         playerTwoGameBoard.setPlayerShotPlacement(playerOneGameBoard);
-        playerOneGameBoard.printShipPlacement();
-        playerTwoGameBoard.printShipPlacement();
+
 
         // TODO while block are actually the same make a single method of them with parameter "player"
         while (!Thread.currentThread().isInterrupted()) {
             boolean playerOneMissedOrGameOver = false;
             while (!playerOneMissedOrGameOver) {
+                playerOneGameBoard.printShipPlacement();
                 System.out.println("Player 1 takes a shot");
                 String playerOneShot = scanner.nextLine();
                 System.out.printf("Player 1 shot was: %s%n", playerOneShot);
                 Shot shot = playerTwoGameBoard.addShotPlacement(playerOneShot);
-                if (shot.isSuccessfulHit()) {
-                    System.out.println("Player 1 scored a hit");
-                    if (shot.isShipWasDestroyed()) {
-                        System.out.println("Player 1 destroyed a ship");
-                    }
-                    if (playerTwoGameBoard.allShipsDestroyed()) {
-                        System.out.println("All ships of Player 2 were destroyed");
+                if (shot.isValidShot()) {
+                    if (shot.isSuccessfulHit()) {
+                        System.out.println("Player 1 scored a hit");
+                        if (shot.isShipWasDestroyed()) {
+                            System.out.println("Player 1 destroyed a ship");
+                        }
+                        if (playerTwoGameBoard.allShipsDestroyed()) {
+                            System.out.println("All ships of Player 2 were destroyed");
+                            playerOneMissedOrGameOver = true;
+                            gameIsOver = true;
+                        }
+                    } else {
+                        System.out.println("Player 1 missed");
                         playerOneMissedOrGameOver = true;
-                        gameIsOver = true;
+                        playerOneGameBoard.printShipPlacement();
                     }
-                } else {
-                    System.out.println("Player 1 missed");
-                    playerOneMissedOrGameOver = true;
-                }
-                playerOneGameBoard.printShipPlacement();
+                } else
+                    System.out.println("Invalid shot. This cell has already been shot or the ship was destroyed nearby.");
             }
             boolean playerTwoMissedOrGameOver = gameIsOver;
             while (!playerTwoMissedOrGameOver) {
+                playerTwoGameBoard.printShipPlacement();
                 System.out.println("Player 2 takes a shot");
                 String playerTwoShot = scanner.nextLine();
                 System.out.printf("Player 2 shot was: %s%n", playerTwoShot);
                 Shot shot = playerOneGameBoard.addShotPlacement(playerTwoShot);
-                if (shot.isSuccessfulHit()) {
-                    System.out.println("Player 2 scored a hit");
-                    if (shot.isShipWasDestroyed()) {
-                        System.out.println("Player 2 destroyed a ship");
+                if (shot.isValidShot()) {
+                    if (shot.isSuccessfulHit()) {
+                        System.out.println("Player 2 scored a hit");
+                        if (shot.isShipWasDestroyed()) {
+                            System.out.println("Player 2 destroyed a ship");
+                        }
+                        if (playerOneGameBoard.allShipsDestroyed()) {
+                            System.out.println("All ships of Player 1 were destroyed");
+                            playerTwoMissedOrGameOver = false;
+                            gameIsOver = true;
+                        }
+                    } else {
+                        System.out.println("Player 2 missed");
+                        playerTwoMissedOrGameOver = true;
+                        playerTwoGameBoard.printShipPlacement();
                     }
-                    if (playerOneGameBoard.allShipsDestroyed()) {
-                        System.out.println("All ships of Player 1 were destroyed");
-                        playerTwoMissedOrGameOver = false;
-                        gameIsOver = true;
-                    }
-                } else {
-                    System.out.println("Player 2 missed");
-                    playerTwoMissedOrGameOver = true;
-                }
-                playerTwoGameBoard.printShipPlacement();
+                } else
+                    System.out.println("Invalid shot. This cell has already been shot or the ship was destroyed nearby.");
             }
             if (gameIsOver) {
                 Thread.currentThread().interrupt();

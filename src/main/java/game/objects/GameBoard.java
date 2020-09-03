@@ -3,20 +3,23 @@ package game.objects;
 import game.utils.Constants;
 import game.utils.ShipUtils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 
 public class GameBoard {
     private final HashMap<String, Ship> shipPlacement = new HashMap<>();
     private final HashMap<String, Boolean> enemyShotPlacement = new HashMap<>();
-    private final HashSet<Character> x_axis = new HashSet<>();
-    private final HashSet<Integer> y_axis = new HashSet<>();
+    private final ArrayList<Character> x_axis = new ArrayList<>();
+    private final ArrayList<Integer> y_axis = new ArrayList<>();
     private HashMap<String, Boolean> playerShotPlacement = new HashMap<>();
 
     public GameBoard(int x_length, int y_length) {
         char x = Constants.xEntry;
         int y = Constants.yEntry;
-        // TODO check for x_length and y_length
+        x_length = Math.min(x_length, Constants.yEnd);
+        x_length = Math.max(x_length, Constants.yEntry);
+        y_length = Math.min(y_length, Constants.yEnd);
+        y_length = Math.max(y_length, Constants.yEntry);
         while (x_length > 0 || y_length > 0) {
             if (x_length > 0) {
                 if (Constants.unusedChars.contains(x)) {
@@ -39,8 +42,6 @@ public class GameBoard {
     }
 
     public Shot addShotPlacement(String placement) {
-        // TODO do smth if cell has already been shot
-        // TODO add dots after ship destruction
         if (shipPlacement.containsKey(placement)) {
             Ship ship = shipPlacement.get(placement);
             ship.addShipHitCoordinates(placement);
@@ -51,10 +52,12 @@ public class GameBoard {
                     enemyShotPlacement.put(cellOfShipBorders, false);
                 }
             }
-            return new Shot(true, ship.isShipDestroyed());
+            return new Shot(true, true, ship.isShipDestroyed());
         } else {
+            if (enemyShotPlacement.containsKey(placement))
+                return new Shot(false, false, false);
             enemyShotPlacement.put(placement, false);
-            return new Shot(false, false);
+            return new Shot(true, false, false);
         }
     }
 
@@ -74,6 +77,7 @@ public class GameBoard {
         return shipPlacement.isEmpty();
     }
 
+    // TODO hard coded symbols, add them to Constants?
     public void printShipPlacement() {
         System.out.print("  ");
         for (Character x : x_axis) {
@@ -84,6 +88,7 @@ public class GameBoard {
         for (Character x : x_axis) {
             System.out.print(" " + x);
         }
+        System.out.print(" " + "|" + " ");
         System.out.println();
         for (Integer y : y_axis) {
             System.out.printf("%02d", y);
@@ -105,6 +110,7 @@ public class GameBoard {
                     else System.out.print(" " + "·");
                 } else System.out.print(" " + " ");
             }
+            System.out.print(" " + "|" + " ");
             System.out.println();
         }
     }

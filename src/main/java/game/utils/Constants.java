@@ -2,7 +2,6 @@ package game.utils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 
 public class Constants {
     public final static char xEntry = 'А';

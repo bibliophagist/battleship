@@ -7,6 +7,7 @@ import java.util.*;
 
 public class ShipUtils {
 
+    // TODO add check for ships belongs to game borders
     public static Boolean CheckShipPositions(GameBoard gameBoard) {
         Set<String> shipCells = gameBoard.getShipPlacement().keySet();
         HashSet<String> borderCells = new HashSet<>();
@@ -18,13 +19,12 @@ public class ShipUtils {
 
     public static ArrayList<String> GetCellsOfShipBorders(Ship ship) {
         ArrayList<String> shipAndBordersCells = new ArrayList<>();
-        HashSet<Character> x_axis = new HashSet<>();
-        HashSet<Integer> y_axis = new HashSet<>();
+        ArrayList<Character> x_axis = new ArrayList<>();
+        ArrayList<Integer> y_axis = new ArrayList<>();
         for (String shipCoordinate : ship.getShipCoordinates()) {
             char x = shipCoordinate.charAt(0);
             int y = Integer.parseInt(shipCoordinate.substring(1));
-            // TODO if x char why is x - 1 = int and 'x' - 1 = char
-            // TODO remove Й Ъ Ь
+            // TODO if x char why is x - 1 = int and 'x' - 1 = char?
             for (char i = (char) (x - 1); i < x + 2; i++) {
                 if (i >= Constants.xEntry && i <= Constants.xEnd) {
                     if (Constants.unusedChars.contains(i)) {
