@@ -24,15 +24,20 @@ public class ShipUtils {
             char x = shipCoordinate.charAt(0);
             int y = Integer.parseInt(shipCoordinate.substring(1));
             // TODO if x char why is x - 1 = int and 'x' - 1 = char
-            // TODO hard coded table borders
             // TODO remove Й Ъ Ь
             for (char i = (char) (x - 1); i < x + 2; i++) {
-                if (i >= 'А' && i <= 'Я') {
-                    x_axis.add(i);
+                if (i >= Constants.xEntry && i <= Constants.xEnd) {
+                    if (Constants.unusedChars.contains(i)) {
+                        if (i == x - 1)
+                            x_axis.add((char) (i - 1));
+                        if (i == x + 1)
+                            x_axis.add((char) (i + 1));
+                    } else
+                        x_axis.add(i);
                 }
             }
             for (int i = y - 1; i < y + 2; i++) {
-                if (i >= 1 && i <= 32) {
+                if (i >= Constants.yEntry && i <= Constants.yEnd) {
                     y_axis.add(i);
                 }
             }

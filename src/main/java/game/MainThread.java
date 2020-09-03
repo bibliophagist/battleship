@@ -18,12 +18,14 @@ public class MainThread extends Thread {
         boolean gameIsOver = false;
         GameBoard playerOneGameBoard = null;
         GameBoard playerTwoGameBoard = null;
+        System.out.println("Please input game board size. Example 10*10");
+        String gameBoardSize = scanner.nextLine();
         while (!shipsWasPlaced) {
 
             try {
                 System.out.println("Player 1 please input you ship placement." +
                         " Example: А1 Б1, Г1 Г2 Г3, Ж1 З1 И1 К1, К3 К4, Б5 Б6 Б7, Ж6, Г9, Е9, И9 И10, А10");
-                playerOneGameBoard = boardInitializer.createGameBoard(scanner.nextLine());
+                playerOneGameBoard = boardInitializer.createGameBoard(scanner.nextLine(), gameBoardSize);
             } catch (GameCouldNotBeCreatedException gameCouldNotBeCreatedException) {
                 System.out.println(gameCouldNotBeCreatedException.getMessage());
             }
@@ -32,7 +34,7 @@ public class MainThread extends Thread {
                 try {
                     System.out.println("Player 2 please input you ship placement." +
                             " Example: А1 Б1, Г1 Г2 Г3, Ж1 З1 И1 К1, К3 К4, Б5 Б6 Б7, Ж6, Г9, Е9, И9 И10, А10");
-                    playerTwoGameBoard = boardInitializer.createGameBoard(scanner.nextLine());
+                    playerTwoGameBoard = boardInitializer.createGameBoard(scanner.nextLine(), gameBoardSize);
                 } catch (GameCouldNotBeCreatedException gameCouldNotBeCreatedException) {
                     System.out.println(gameCouldNotBeCreatedException.getMessage());
                 }
@@ -41,6 +43,10 @@ public class MainThread extends Thread {
                 shipsWasPlaced = true;
             }
         }
+        playerOneGameBoard.setPlayerShotPlacement(playerTwoGameBoard);
+        playerTwoGameBoard.setPlayerShotPlacement(playerOneGameBoard);
+        playerOneGameBoard.printShipPlacement();
+        playerTwoGameBoard.printShipPlacement();
 
         // TODO while block are actually the same make a single method of them with parameter "player"
         while (!Thread.currentThread().isInterrupted()) {
@@ -64,6 +70,7 @@ public class MainThread extends Thread {
                     System.out.println("Player 1 missed");
                     playerOneMissedOrGameOver = true;
                 }
+                playerOneGameBoard.printShipPlacement();
             }
             boolean playerTwoMissedOrGameOver = gameIsOver;
             while (!playerTwoMissedOrGameOver) {
@@ -85,6 +92,7 @@ public class MainThread extends Thread {
                     System.out.println("Player 2 missed");
                     playerTwoMissedOrGameOver = true;
                 }
+                playerTwoGameBoard.printShipPlacement();
             }
             if (gameIsOver) {
                 Thread.currentThread().interrupt();
